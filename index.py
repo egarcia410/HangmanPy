@@ -1,4 +1,4 @@
-import requests
+# import requests
 import random
 
 # Insert API for selecting random word in future
