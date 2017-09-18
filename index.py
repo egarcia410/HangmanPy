@@ -8,68 +8,86 @@ import random
 # randomWord = random.randint(0, len(words))
 # print(words[randomWord])
 
-def play():
+def hangman():
     words = ['Houston', 'Boston', 'Orlando', 'Seattle', 'Atlanta']
-    continuePlay = True
+    randomWord = random.choice(words).lower()
     guesses = 0
     wrongGuesses = 0
-    randomWord = random.choice(words).lower()
+    guessedLetters = ""
     strWord = ""
+    won = True
+    continuePlay = True
 
     for letter in randomWord:
         strWord += '*' 
 
-    # hangman[39] == O <---Head
-    # hangman[51] == / <---Left arm
-    # hangman[52] == | <---Upper body
-    # hangman[53] == \ <---Right arm Insert extra '\' hangman[54]
-    # hangman[66] == | <---Lower body
-    # hangman[78] == / <---Left leg
-    # hangman[80] == \ <---Right leg
-
     print('Welcome to Hangman!')
-    hangman = """
-     ________
-     |/    |
-     |     
-     |    
-     |     
-     |    
-    _|_
-        """
 
+    listHangman = [ [' ', '_', '_', '_', '_', '_', '_', '_', ' '],
+                    [' ', '|', ' ', ' ', ' ', ' ', '|', ' ', ' '],
+                    [' ', '|', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    [' ', '|', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    [' ', '|', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    [' ', '|', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    ['_', '|', '_', ' ', ' ', ' ', ' ', ' ', ' '] ]
 
     while continuePlay:
-        print(hangman)
+        strHangman = listToStrHangman(listHangman)
+        print(strHangman)
         print(strWord)
-        print('Guesses: ', guesses)
+        print('Number of Guesses: ', guesses)
+        print('Guessed Letters: ', guessedLetters)
         response = input('Choose a letter: ').lower()
         # Checks if response is not a string or more than one letter input
-        if type(response) != 'str' or len(response) > 1:
-            break
-        elif response in randomWord:
-            guesses += 1
-            for ind, letter in enumerate(randomWord):
-                if letter == response:
-                    strWord[ind] = response
-        else:
-            guesses += 1
-            wrongGuesses += 1
-            if wrongGuesses == 1:
-                strWord[39] = 'O'
-            elif wrongGuesses == 2:
-                strWord[52] = '|'
-                strWord[66] = '|'
-            elif wrongGuesses == 3:
-                strWord[51] = '/'
-            elif wrongGuesses == 4:
-                strWord[53] = '\\'
-            elif wrongGuesses == 5:
-                strWord[78] = '/'
+        if isinstance(response, str) and len(response) < 2:
+            if response in randomWord:
+                guesses += 1
+                guessedLetters += response
+                for ind, letter in enumerate(randomWord):
+                    if letter == response:
+                        strList = list(strWord)
+                        strList[ind] = response
+                        strWord = ''.join(strList)
+                        if strWord == randomWord:
+                            continuePlay = False
             else:
-                strWord[80] = '\\'
-                continuePlay = False
+                guesses += 1
+                guessedLetters += response
+                wrongGuesses += 1
+                if wrongGuesses == 1:
+                    listHangman[2][6] = 'O'
+                elif wrongGuesses == 2:
+                    listHangman[3][6] = '|'
+                    listHangman[4][6] = '|'
+                elif wrongGuesses == 3:
+                    listHangman[3][5] = '/'
+                elif wrongGuesses == 4:
+                    listHangman[3][7] = '\\'
+                elif wrongGuesses == 5:
+                    listHangman[5][5] = '/'
+                elif wrongGuesses == 6:
+                    listHangman[5][7] = '\\'
+                    won = False
+                    continuePlay = False
+        
+        for ind, x in enumerate(listHangman):
+            strHangman += ''.join(listHangman[ind]) + '\n'
+        print('---------------------')
 
+    if won:
+        print('You Won!')
+    else:
+        print('You Died')
+    print(listToStrHangman(listHangman))
+    print(strWord)
+    print('Number of Guesses: ', guesses)
+    print('Guessed Letters: ', guessedLetters)
+
+def listToStrHangman(listHangman):
+    strHangman = ""
+    for ind, x in enumerate(listHangman):
+        strHangman += ''.join(listHangman[ind]) + '\n'
+    return strHangman
 
 if __name__ == '__main__':
-    play()
+    hangman()
